@@ -36,10 +36,12 @@
 # define FREE_CELL			0
 # define TEAM_SIZE			1024
 # define PLAYERS_SIZE		10000
-# define ACTIONS_LOOP_TIME	100
-# define HISTORY			1024
-# define SPAWN_POS_TIME		10
+# define ACTIONSLOOPTIME	100
+# define HISTORY			5096
+# define SPAWN_POS_TIME		100
 # define _NSIG				65
+# define FORNORMMAPSIZE		MAP_SIZE
+# define FORNORMSPAWNPOS	SPAWN_POS_TIME
 
 typedef struct		s_player
 {
@@ -68,6 +70,13 @@ typedef struct		s_lemipc
 	t_timeline		timeline;
 	BOOL			game_over;
 }					t_lemipc;
+
+typedef struct		s_target
+{
+	ushort			id;
+	ushort			x_position;
+	ushort			y_position;
+}					t_target;
 
 typedef struct		s_global
 {
@@ -115,7 +124,7 @@ int				get_random(int max);
 **	MAP
 */
 t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y);
-void			update_pos(t_lemipc *lemipc, t_player *player);
+void			update_map_pos(t_lemipc *lemipc, t_player *player);
 
 /*
 **	PLAYER
@@ -125,6 +134,7 @@ t_player		*add_new_player(int team_id, t_lemipc *lemipc);
 int				count_alive_players(t_lemipc *lemipc);
 t_player		*get_first_alive_player(t_lemipc *lemipc);
 void			die(t_player *player, t_lemipc *lemipc);
+void			set_pos(int x, int y, t_player *player, t_lemipc *lemipc);
 
 /*
 **	TIMELINE
@@ -139,7 +149,15 @@ BOOL			get_next_player_turn(t_timeline *timeline, t_lemipc *lemipc);
 void			catch_signal();
 
 /*
-**	TEAM
+**	IA
 */
-// t_team			*get_team(int id, t_lemipc *lemipc);
+void			ia_actions_handler(t_player *player, t_lemipc *lemipc);
+t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc);
+void			move_to_enemy(t_player *player, t_player *target, t_lemipc *lemipc);
+
+/*
+**	MAP
+*/
+BOOL			is_cell_free(int x, int y, t_lemipc *lemipc);
+void			reset_map_pos(t_lemipc *lemipc, t_player *player);
 #endif

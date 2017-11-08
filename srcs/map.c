@@ -12,6 +12,14 @@
 
 #include "all.h"
 
+BOOL			is_cell_free(int x, int y, t_lemipc *lemipc)
+{
+	if (lemipc->map[x][y] != FREE_CELL)
+		return (FALSE);
+	else
+		return (TRUE);
+}
+
 t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y)
 {
 	t_player	*player;
@@ -22,13 +30,12 @@ t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y)
 	return (player);
 }
 
-void			update_pos(t_lemipc *lemipc, t_player *player)
+void			reset_map_pos(t_lemipc *lemipc, t_player *player)
 {
-	sem_t		*sem;
+	lemipc->map[player->x_position][player->y_position] = FREE_CELL;
+}
 
-	sem = get_semaphore(SEMAPHORE_NAME);
-	lock(sem);
+void			update_map_pos(t_lemipc *lemipc, t_player *player)
+{
 	lemipc->map[player->x_position][player->y_position] = player->id;
-	unlock(sem);
-	close_semaphore(sem);
 }

@@ -45,16 +45,13 @@ BOOL		my_turn(t_player *player, t_lemipc *lemipc, t_timeline *timeline, sem_t *s
 			timeline->round++;
 		return (TRUE);
 	}
-	else if (timeline->current_player_id != 0)
-	{
-		if ((action_player = find_player_by_id(timeline->current_player_id, lemipc)) != NULL)
-		{
-			if (action_player->alive == FALSE)
-				get_next_player_turn(timeline, lemipc);
-		}
-	}
 	else
-		default_timeline(timeline, lemipc);
+	{
+		action_player = find_player_by_id(timeline->current_player_id, lemipc);
+		if (action_player == NULL || action_player->alive == FALSE)
+			get_next_player_turn(timeline, lemipc);
+	}
+	default_timeline(timeline, lemipc);
 	return (FALSE);
 }
 
@@ -94,10 +91,13 @@ BOOL		get_next_player_turn(t_timeline *timeline, t_lemipc *lemipc)
 {
 	int	i;
 
+	if (timeline->history_count > HISTORY)
+		return (reset_history_timeline(timeline, lemipc));
 	i = 0;
 	while (i < PLAYERS_SIZE)
 	{
-		if (lemipc->players[i].alive && !in_timeline_history(&lemipc->players[i], timeline))
+		if (lemipc->players[i].alive &&
+			!in_timeline_history(&lemipc->players[i], timeline))
 		{
 			set_player_turn(&lemipc->players[i], timeline);
 			return (TRUE);
@@ -141,13 +141,14 @@ void		start_actions_loop(t_player *player, t_lemipc *lemipc)
 		{
 			printf("It's my turn to play ! (player id: %d, team: %d), team alive count: %d\n",
 			player->id, player->team_id, count_alive_teams(lemipc));
+			ia_actions_handler(player, lemipc);
 			if (!end_turn(player, timeline, lemipc, sem))
 				end_lemipc(lemipc);
 			check_fight_end(lemipc);
 		}
 		else
 			printf("It's not my turn to play !\n");
-		usleep(ACTIONS_LOOP_TIME * 1000);
+		usleep(ACTIONSLOOPTIME * 1000);
 	}
 	close_semaphore(sem);
 	if (!g_global.ended_the_game)

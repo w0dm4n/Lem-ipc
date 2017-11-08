@@ -12,6 +12,15 @@
 
 #ifndef GRAPHICS_H
 # define GRAPHICS_H
+# include "SDL.h"
+
+typedef struct					s_graphic_globals
+{
+	SDL_Window					*window;
+	SDL_GLContext				*context;
+	SDL_GLContext				*renderer;
+	int							colors[TEAM_SIZE][3];
+}								t_graphic_globals;
 
 /*
 **	MAIN
@@ -19,7 +28,8 @@
 int				start_graphic_main(t_lemipc *lemipc);
 
 # define WINDOW_WIDTH 	1024
-# define WINDOW_HEIGHT 	768
+# define WINDOW_HEIGHT 	1024
 # define WINDOW_TITLE	"Lemipc"
 
+# define GRAPHIC_SIZE	900
 #endif

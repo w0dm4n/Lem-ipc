@@ -14,7 +14,7 @@
 
 int				get_segment_size()
 {
-	return ((MAP_SIZE * 2) + sizeof(struct s_lemipc));
+	return ((FORNORMMAPSIZE * 2) + sizeof(struct s_lemipc));
 }
 
 int				get_active_segment(int size)
