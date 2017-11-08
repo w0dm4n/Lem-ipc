@@ -26,6 +26,7 @@ OBJDIR_LEM_IPC		=	objs/
 INCDIR				=	includes/
 LIBFT_DIR			=	libft/
 LIBFT_LIB			=	$(LIBFT_DIR)libft.a
+SDL_LIB				=	`sdl-config --cflags --libs`
 
 SRCBASE_LEM_IPC	=	\
 					main.c				\
@@ -41,6 +42,7 @@ SRCBASE_LEM_IPC	=	\
 					timeline.c			\
 					lists/maps.c		\
 					signal.c			\
+					graphics/main.c		\
 
 SRCS_LEM_IPC			=	$(addprefix $(SRCDIR_LEM_IPC), $(SRCBASE_LEM_IPC))
 OBJS_LEM_IPC			=	$(addprefix $(OBJDIR_LEM_IPC), $(SRCBASE_LEM_IPC:.c=.o))
@@ -67,7 +69,8 @@ $(OBJDIR_LEM_IPC):
 $(OBJDIR_LEM_IPC)%.o : $(SRCDIR_LEM_IPC)%.c | $(OBJDIR_LEM_IPC)
 	$(CC) $(FLAGS) -MMD -c $< -o $@											\
 		-I $(LIBFT_DIR)$(INCDIR)											\
-		-I $(INCDIR)
+		-I $(INCDIR)														\
+		$(SDL_LIB)
 
 fcleanlib:	fclean
 	make -C $(LIBFT_DIR) fclean
@@ -80,7 +83,7 @@ relib:		fclean fcleanlib all
 
 LEM_IPC: $(OBJDIR_LEM_IPC) $(OBJS_LEM_IPC)
 	make -C $(LIBFT_DIR)
-	$(CC) $(FLAGS) $(FLAGS_O) -o $(NAME_LEM_IPC) $(OBJS_LEM_IPC) $(LIBFT_LIB)
+	$(CC) $(FLAGS) $(FLAGS_O) -o $(NAME_LEM_IPC) $(OBJS_LEM_IPC) $(LIBFT_LIB) $(SDL_LIB)
 	echo "\r\033[38;5;22m📗  MAKE $(NAME_LEM_IPC)"
 
 clean:

@@ -152,7 +152,6 @@ void		start_actions_loop(t_player *player, t_lemipc *lemipc)
 	close_semaphore(sem);
 	if (!g_global.ended_the_game)
 		print_result(lemipc);
-	// dead, remove me from players list
 }
 
 void		timeline(t_player *player, t_lemipc *lemipc)

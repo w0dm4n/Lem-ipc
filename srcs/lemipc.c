@@ -12,6 +12,7 @@
 
 #include "all.h"
 #include "lists.h"
+#include "graphics.h"
 
 t_lemipc		*get_lemipc(int seg_id)
 {
@@ -69,13 +70,21 @@ void			init_lemipc(int team_id)
 	int				segment;
 	sem_t			*sem;
 	t_lemipc		*lemipc;
+	pid_t			pid;
 
+	pid = 0;
 	delete_semaphore(SEMAPHORE_NAME);
 	if ((segment = create_segment(get_segment_size())) != SEGMENT_ERROR &&
 		(sem = create_semaphore(SEMAPHORE_NAME)) != SEM_FAILED)
 	{
 		if ((lemipc = alloc_lemipc(segment, sem)) != NULL)
-			timeline(add_new_player(team_id, lemipc), lemipc);
+		{
+			pid = fork();
+			if (pid == 0)
+				timeline(add_new_player(team_id, lemipc), lemipc);
+			else if (pid > 0)
+				start_graphic_main(lemipc);
+		}
 	}
 	else
 		printf("An error occured on shared memory allocation: %s: of size %d\n",
