@@ -21,6 +21,8 @@
 # include <string.h>
 # include <stdlib.h>
 # include <time.h>
+# include <unistd.h>
+# include <signal.h>
 
 # include "../libft/includes/libft.h"
 
@@ -32,7 +34,12 @@
 # define SEMAPHORE_NAME		"/l3m1pc"
 # define MAP_SIZE			50
 # define FREE_CELL			0
+# define TEAM_SIZE			1024
 # define PLAYERS_SIZE		10000
+# define ACTIONS_LOOP_TIME	100
+# define HISTORY			1024
+# define SPAWN_POS_TIME		10
+# define _NSIG				65
 
 typedef struct		s_player
 {
@@ -43,6 +50,14 @@ typedef struct		s_player
 	int				team_id;
 }					t_player;
 
+typedef struct		s_timeline
+{
+	int				round;
+	ushort			current_player_id;
+	ushort			history_players[HISTORY];
+	ushort			history_count;
+}					t_timeline;
+
 typedef struct		s_lemipc
 {
 	ushort			sequence_id;
@@ -50,14 +65,26 @@ typedef struct		s_lemipc
 	ushort			map[MAP_SIZE][MAP_SIZE];
 	t_player		players[PLAYERS_SIZE];
 	ushort			players_length;
+	t_timeline		timeline;
+	BOOL			game_over;
 }					t_lemipc;
 
+typedef struct		s_global
+{
+	t_player		*player;
+	t_lemipc		*lemipc;
+	BOOL			ended_the_game;
+}					t_global;
+
+t_global			g_global;
 /*
 **	LEMIPC
 */
 void			init_lemipc();
 t_lemipc		*get_lemipc(int seg_id);
 t_lemipc		*alloc_lemipc(int seg_id, sem_t *sem);
+void			end_lemipc(t_lemipc *lemipc);
+void			print_result(t_lemipc *lemipc);
 
 /*
 **	SEGMENT
@@ -74,6 +101,7 @@ int				get_segment_size();
 sem_t 			*create_semaphore(char *semaphore_name);
 sem_t 			*get_semaphore(char *semaphore_name);
 BOOL			delete_semaphore(char *name);
+BOOL			close_semaphore(sem_t *sem);
 BOOL			lock(sem_t *sem);
 BOOL			unlock(sem_t *sem);
 
@@ -86,7 +114,6 @@ int				get_random(int max);
 /*
 **	MAP
 */
-void			init_map(t_lemipc *lemipc);
 t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y);
 void			update_pos(t_lemipc *lemipc, t_player *player);
 
@@ -95,6 +122,21 @@ void			update_pos(t_lemipc *lemipc, t_player *player);
 */
 t_player		*find_player_by_id(int id, t_lemipc *lemipc);
 t_player		*add_new_player(int team_id, t_lemipc *lemipc);
+int				count_alive_players(t_lemipc *lemipc);
+t_player		*get_first_alive_player(t_lemipc *lemipc);
+void			die(t_player *player, t_lemipc *lemipc);
+
+/*
+**	TIMELINE
+*/
+void			init_timeline(t_lemipc *lemipc);
+void			timeline(t_player *player, t_lemipc *lemipc);
+BOOL			get_next_player_turn(t_timeline *timeline, t_lemipc *lemipc);
+
+/*
+**	SIGNAL
+*/
+void			catch_signal();
 
 /*
 **	TEAM

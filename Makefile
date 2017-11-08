@@ -38,6 +38,9 @@ SRCBASE_LEM_IPC	=	\
 					player.c			\
 					team.c				\
 					lists/teams.c		\
+					timeline.c			\
+					lists/maps.c		\
+					signal.c			\
 
 SRCS_LEM_IPC			=	$(addprefix $(SRCDIR_LEM_IPC), $(SRCBASE_LEM_IPC))
 OBJS_LEM_IPC			=	$(addprefix $(OBJDIR_LEM_IPC), $(SRCBASE_LEM_IPC:.c=.o))

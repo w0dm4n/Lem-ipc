@@ -1,34 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   map.c                                              :+:      :+:    :+:   */
+/*   maps.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: frmarinh <frmarinh@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/07 05:23:28 by frmarinh          #+#    #+#             */
-/*   Updated: 2017/11/07 05:23:33 by frmarinh         ###   ########.fr       */
+/*   Created: 2017/11/07 23:03:06 by frmarinh          #+#    #+#             */
+/*   Updated: 2017/11/07 23:03:12 by frmarinh         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "all.h"
 
-t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y)
+static void		fill_zero_map(int *map_y)
 {
-	t_player	*player;
+	int		y;
 
-	player = NULL;
-	if (lemipc->map[x][y] != FREE_CELL)
-		return (find_player_by_id(lemipc->map[x][y], lemipc));
-	return (player);
+	y = 0;
+	while (y < MAP_SIZE)
+		map_y[y++] = FREE_CELL;
 }
 
-void			update_pos(t_lemipc *lemipc, t_player *player)
+void			init_map(t_lemipc *lemipc)
 {
-	sem_t		*sem;
+	int		x;
 
-	sem = get_semaphore(SEMAPHORE_NAME);
-	lock(sem);
-	lemipc->map[player->x_position][player->y_position] = player->id;
-	unlock(sem);
-	close_semaphore(sem);
+	x = 0;
+	while (x < MAP_SIZE)
+		fill_zero_map((int*)&lemipc->map[x++]);
 }

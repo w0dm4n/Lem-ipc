@@ -27,6 +27,11 @@ BOOL			delete_semaphore(char *name)
 	return (sem_unlink(name));
 }
 
+BOOL			close_semaphore(sem_t *sem)
+{
+	return (sem_close(sem));
+}
+
 BOOL			lock(sem_t *sem)
 {
 	return (sem_wait(sem));

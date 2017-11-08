@@ -13,67 +13,38 @@
 #include "all.h"
 #include "lists.h"
 
-void					print_y(t_lemipc* lemipc, int x)
-{
-	int y = 0;
-	while (y < MAP_SIZE) {
-		printf("%d\n", lemipc->map[x][y++]);
-	}
-}
-
-static void				set_rand()
+static void				set_rand(void)
 {
 	struct timespec ts;
 
 	clock_gettime(CLOCK_MONOTONIC, &ts);
-    srand((time_t)ts.tv_nsec);
+	srand((time_t)ts.tv_nsec);
+}
+
+static void				init_utilities()
+{
+	set_rand();
+	catch_signal();
+	g_global.player = NULL;
+	g_global.lemipc = NULL;
 }
 
 int						main(int argc, char **argv)
 {
-	int		segment;
-	int		team_id;
+	int			segment;
+	int			team_id;
+	t_lemipc	*lemipc;
 
-	set_rand();
 	team_id = 0;
+	segment = 0;
+	lemipc = NULL;
+	init_utilities();
 	if (argc == 2)
 	{
 		team_id = ft_atoi(argv[1]);
-		if ((segment = get_active_segment(get_segment_size())) != SEGMENT_ERROR)
-		{
-			sem_t		*sem;
-			t_lemipc	*lemipc = get_lemipc(segment);
-			// t_team		*team;
-
-			sem = get_semaphore(SEMAPHORE_NAME);
-			t_player *player = add_new_player(team_id, lemipc);
-			if (player)
-			{
-				printf("Player id: %d, my x position: %d, my y position: %d\n",
-				player->id, player->x_position, player->y_position);
-			}
-			else {
-				printf("Map is full cant have some new players !\n");
-			}
-			//if ((team = get_team(team_id, lemipc)) == NULL)
-			// team = create_team(team_id, lemipc);
-			// lock(sem);
-			// printf("Segment id %d found !\n", segment);
-			// if ((lemipc = get_lemipc(segment)) != NULL)
-			// {
-			// 	lemipc->sequence_id += 1;
-			// 	int x = 0;
-			// 	int y = 0;
-			// 	while (x < MAP_SIZE) {
-			// 		print_y(lemipc, x++);
-			// 	}
-			// }
-			// if (delete_segment(segment) != SEGMENT_ERROR)
-			// {
-			// 	printf("Segment id %d deleted\n", segment);
-			// }
-			// unlock(sem);
-		}
+		if ((segment = get_active_segment(get_segment_size())) != SEGMENT_ERROR
+			&& (lemipc = get_lemipc(segment)) != NULL)
+			timeline(add_new_player(team_id, lemipc), lemipc);
 		else
 			init_lemipc(ft_atoi(argv[1]));
 	}

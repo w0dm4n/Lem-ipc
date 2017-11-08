@@ -47,6 +47,7 @@ static BOOL			set_spawn_position(t_lemipc *lemipc, t_player *player)
 		}
 		else
 			retry++;
+		usleep(SPAWN_POS_TIME * 1000);
 	}
 	return (FALSE);
 }
@@ -58,13 +59,21 @@ int					count_alive_players(t_lemipc *lemipc)
 
 	i = 0;
 	alive_players = 0;
-	while (i < lemipc->players_length)
+	while (i < PLAYERS_SIZE)
 	{
 		if (lemipc->players[i].alive == TRUE)
 			alive_players += 1;
 		i++;
 	}
 	return (alive_players);
+}
+
+void				die(t_player *player, t_lemipc *lemipc)
+{
+	player->alive = FALSE;
+	lemipc->players_length -= 1;
+	if (lemipc->players_length < 0)
+		lemipc->players_length = 0;
 }
 
 t_player			*get_free_player(t_lemipc *lemipc)
@@ -81,6 +90,20 @@ t_player			*get_free_player(t_lemipc *lemipc)
 	return (NULL);
 }
 
+t_player			*get_first_alive_player(t_lemipc *lemipc)
+{
+	int		i;
+
+	i = 0;
+	while (i < PLAYERS_SIZE)
+	{
+		if (lemipc->players[i].alive)
+			return (&lemipc->players[i]);
+		i++;
+	}
+	return (NULL);
+}
+
 t_player			*add_new_player(int team_id, t_lemipc *lemipc)
 {
 	int			player_id;
@@ -90,7 +113,8 @@ t_player			*add_new_player(int team_id, t_lemipc *lemipc)
 	sem = get_semaphore(SEMAPHORE_NAME);
 	player_id = 0;
 	player = NULL;
-	if (team_id > 0 && (player = get_free_player(lemipc)) != NULL)
+	if (team_id > 0 && (player = get_free_player(lemipc)) != NULL &&
+	lemipc->players_length < (MAP_SIZE * 2))
 	{
 		lock(sem);
 		player->id = lemipc->players_length++;
@@ -103,8 +127,12 @@ t_player			*add_new_player(int team_id, t_lemipc *lemipc)
 		}
 		unlock(sem);
 		update_pos(lemipc, player);
+		close_semaphore(sem);
 		return (player);
 	}
 	else
+	{
+		close_semaphore(sem);
 		return (NULL);
+	}
 }

@@ -17,5 +17,10 @@
 /*
 **	TEAMS
 */
-// t_team		*create_team(int team_id, t_lemipc *lemipc);
+int					count_alive_teams(t_lemipc *lemipc);
+
+/*
+**	MAPS
+*/
+void				init_map(t_lemipc *lemipc);
 #endif
