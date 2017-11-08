@@ -18,7 +18,8 @@ LENGTHNAME	=	`printf "%s" $(NAMEBASE) | wc -c`
 MAX_COLS	=	$$(echo "$$(tput cols)-24-$(LENGTHNAME)"|bc)
 
 CC			=	gcc
-FLAGS_O		= -Wall -Wextra -Werror
+FLAGS		= -Wall -Wextra -w
+FLAGS_O		= -Wall -Wextra -w
 
 SRCDIR_LEM_IPC		=	srcs/
 OBJDIR_LEM_IPC		=	objs/
