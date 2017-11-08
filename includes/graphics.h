@@ -18,8 +18,8 @@
 */
 int				start_graphic_main(t_lemipc *lemipc);
 
-# define WINDOW_X 		1024
-# define WINDOW_Y 		768
+# define WINDOW_WIDTH 	1024
+# define WINDOW_HEIGHT 	768
 # define WINDOW_TITLE	"Lemipc"
 
 #endif

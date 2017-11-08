@@ -21,10 +21,9 @@ void			handle_signal(int signal)
 	{
 		lock(sem);
 		die(g_global.player, g_global.lemipc);
-		unlock(sem);
-		if (g_global.lemipc->players_length <= 0 ||
-			count_alive_players(g_global.lemipc) <= 0)
+		if (count_alive_teams(g_global.lemipc) <= 1)
 			end_lemipc(g_global.lemipc);
+		unlock(sem);
 	}
 	close_semaphore(sem);
 	exit(EXIT_SUCCESS);

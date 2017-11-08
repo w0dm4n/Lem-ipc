@@ -143,10 +143,10 @@ void		start_actions_loop(t_player *player, t_lemipc *lemipc)
 			player->id, player->team_id, count_alive_teams(lemipc));
 			if (!end_turn(player, timeline, lemipc, sem))
 				end_lemipc(lemipc);
+			check_fight_end(lemipc);
 		}
 		else
 			printf("It's not my turn to play !\n");
-		check_fight_end(lemipc);
 		usleep(ACTIONS_LOOP_TIME * 1000);
 	}
 	close_semaphore(sem);
