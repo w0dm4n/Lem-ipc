@@ -143,7 +143,7 @@ void		start_actions_loop(t_player *player, t_lemipc *lemipc)
 		default_timeline(timeline, lemipc, sem);
 		if (my_turn(player, lemipc, timeline, sem))
 		{
-			printf("Current player id: %d\n", player->id);
+			// printf("Current player id: %d\n", player->id);
 			ia_actions_handler(player, lemipc);
 			if (!end_turn(player, timeline, lemipc, sem))
 				end_lemipc(lemipc);

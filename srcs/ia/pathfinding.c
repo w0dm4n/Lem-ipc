@@ -12,7 +12,21 @@
 
 #include "all.h"
 
-static int		get_all_possible_enemy(t_player *player, t_target *targets, \
+void		fill_zero_targets(t_target *targets)
+{
+	int i;
+
+	i = 0;
+	while (i < PLAYERS_SIZE)
+	{
+	 	targets[i].id = 0;
+		targets[i].x_position = 0;
+		targets[i].y_position = 0;
+		i++;
+	}
+}
+
+int		get_all_possible_enemy(t_player *player, t_target *targets, \
 	t_lemipc *lemipc)
 {
 	int		i;
@@ -20,6 +34,7 @@ static int		get_all_possible_enemy(t_player *player, t_target *targets, \
 
 	i = 0;
 	len = 0;
+	fill_zero_targets(targets);
 	while (i < PLAYERS_SIZE)
 	{
 		if (lemipc->players[i].alive && lemipc->players[i].team_id != \
@@ -35,18 +50,27 @@ static int		get_all_possible_enemy(t_player *player, t_target *targets, \
 	return (len);
 }
 
-static void		fill_zero_targets(t_target *targets)
+int		get_all_possible_players(t_player *player, t_target *targets, \
+	t_lemipc *lemipc)
 {
-	int i;
+	int		i;
+	int		len;
 
 	i = 0;
+	len = 0;
+	fill_zero_targets(targets);
 	while (i < PLAYERS_SIZE)
 	{
-	 	targets[i].id = 0;
-		targets[i].x_position = 0;
-		targets[i].y_position = 0;
+		if (lemipc->players[i].alive && lemipc->players[i].id != player->id)
+		{
+			targets[len].id =  lemipc->players[i].id;
+			targets[len].x_position =  lemipc->players[i].x_position;
+			targets[len].y_position =  lemipc->players[i].y_position;
+			len++;
+		}
 		i++;
 	}
+	return (len);
 }
 
 void			move_to_enemy(t_player *player, t_player *target, t_lemipc *lemipc)
@@ -108,7 +132,6 @@ t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc)
 	target = NULL;
 	possible_target = 0;
 	radius = 5;
-	fill_zero_targets((t_target*)&targets);
 	if ((possible_target = get_all_possible_enemy(player, (t_target*)&targets, lemipc)) > 0)
 	{
 		while (radius < (FORNORMMAPSIZE * 2))

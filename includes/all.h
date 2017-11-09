@@ -43,6 +43,7 @@
 # define _NSIG								65
 # define FORNORMMAPSIZE						MAP_SIZE
 # define FORNORMSPAWNPOS					SPAWN_POS_TIME
+# define MAX_POSSIBLE_PLAYERS_AROUND		20
 # define MAX_POSSIBLE_PLAYERS_BESIDE		8
 # define MAX_ENEMY_BEFORE_DEATH				2
 # define MAX_TURN_TIME						1
@@ -160,10 +161,26 @@ void			catch_signal();
 void			ia_actions_handler(t_player *player, t_lemipc *lemipc);
 t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc);
 void			move_to_enemy(t_player *player, t_player *target, t_lemipc *lemipc);
+void			fill_zero_finder(t_player *players_beside, int len);
 
 /*
 **	MAP
 */
 BOOL			is_cell_free(int x, int y, t_lemipc *lemipc);
 void			reset_map_pos(t_lemipc *lemipc, t_player *player);
+
+/*
+**	RADIUS
+*/
+void		find_players_around(t_player *players, t_player *player, t_lemipc *lemipc, int radius);
+int			count_players_around(t_player *players);
+int			count_ennemies_around(t_player *players, t_player *player);
+int			count_mates_around(t_player *players, t_player *player);
+
+/*
+**	PATHFINDING
+*/
+void			fill_zero_targets(t_target *targets);
+int				get_all_possible_enemy(t_player *player, t_target *targets, t_lemipc *lemipc);
+int				get_all_possible_players(t_player *player, t_target *targets, t_lemipc *lemipc);
 #endif
