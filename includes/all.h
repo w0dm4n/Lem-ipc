@@ -23,25 +23,29 @@
 # include <time.h>
 # include <unistd.h>
 # include <signal.h>
+# include <sys/time.h>
 
 # include "../libft/includes/libft.h"
 
-# define BOOL				ushort
-# define TRUE				1
-# define FALSE				0
-# define SEGMENT_ERROR		-1
-# define IPC_KEY			"l3m1pc"
-# define SEMAPHORE_NAME		"/l3m1pc"
-# define MAP_SIZE			50
-# define FREE_CELL			0
-# define TEAM_SIZE			1024
-# define PLAYERS_SIZE		10000
-# define ACTIONSLOOPTIME	100
-# define HISTORY			5096
-# define SPAWN_POS_TIME		100
-# define _NSIG				65
-# define FORNORMMAPSIZE		MAP_SIZE
-# define FORNORMSPAWNPOS	SPAWN_POS_TIME
+# define BOOL								ushort
+# define TRUE								1
+# define FALSE								0
+# define SEGMENT_ERROR						-1
+# define IPC_KEY							"l3m1pc"
+# define SEMAPHORE_NAME						"/l3m1pc"
+# define MAP_SIZE							50
+# define FREE_CELL							0
+# define TEAM_SIZE							1024
+# define PLAYERS_SIZE						10000
+# define ACTIONSLOOPTIME					100
+# define HISTORY							5096
+# define SPAWN_POS_TIME						100
+# define _NSIG								65
+# define FORNORMMAPSIZE						MAP_SIZE
+# define FORNORMSPAWNPOS					SPAWN_POS_TIME
+# define MAX_POSSIBLE_PLAYERS_BESIDE		8
+# define MAX_ENEMY_BEFORE_DEATH				2
+# define MAX_TURN_TIME						1
 
 typedef struct		s_player
 {
@@ -80,6 +84,7 @@ typedef struct		s_target
 
 typedef struct		s_global
 {
+	BOOL			started_the_game;
 	t_player		*player;
 	t_lemipc		*lemipc;
 	BOOL			ended_the_game;
@@ -119,11 +124,12 @@ BOOL			unlock(sem_t *sem);
 */
 key_t			get_ipc_key(char *ascii_key);
 int				get_random(int max);
+void			fill_zero(int *array, int len);
 
 /*
 **	MAP
 */
-t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y);
+t_player		*get_player_on_cell(t_lemipc *lemipc, ushort x, ushort y);
 void			update_map_pos(t_lemipc *lemipc, t_player *player);
 
 /*

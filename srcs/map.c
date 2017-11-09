@@ -20,7 +20,7 @@ BOOL			is_cell_free(int x, int y, t_lemipc *lemipc)
 		return (TRUE);
 }
 
-t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y)
+t_player		*get_player_on_cell(t_lemipc *lemipc, ushort x, ushort y)
 {
 	t_player	*player;
 

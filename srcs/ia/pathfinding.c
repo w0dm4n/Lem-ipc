@@ -35,7 +35,7 @@ static int		get_all_possible_enemy(t_player *player, t_target *targets, \
 	return (len);
 }
 
-static void		fill_zero(t_target *targets)
+static void		fill_zero_targets(t_target *targets)
 {
 	int i;
 
@@ -108,7 +108,7 @@ t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc)
 	target = NULL;
 	possible_target = 0;
 	radius = 5;
-	fill_zero((t_target*)&targets);
+	fill_zero_targets((t_target*)&targets);
 	if ((possible_target = get_all_possible_enemy(player, (t_target*)&targets, lemipc)) > 0)
 	{
 		while (radius < (FORNORMMAPSIZE * 2))

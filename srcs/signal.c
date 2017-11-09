@@ -20,7 +20,8 @@ void			handle_signal(int signal)
 	if (g_global.player != NULL && g_global.lemipc != NULL)
 	{
 		lock(sem);
-		die(g_global.player, g_global.lemipc);
+		if (g_global.player->alive)
+			die(g_global.player, g_global.lemipc);
 		if (count_alive_teams(g_global.lemipc) <= 1)
 			end_lemipc(g_global.lemipc);
 		unlock(sem);

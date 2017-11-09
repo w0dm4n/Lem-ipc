@@ -12,15 +12,6 @@
 
 #include "all.h"
 
-static void			fill_zero(int *teams)
-{
-	int		i;
-
-	i = 0;
-	while (i < TEAM_SIZE)
-		teams[i++] = 0;
-}
-
 static BOOL			in_team_history(int team_id, int *teams)
 {
 	int		i;
@@ -45,7 +36,7 @@ int					count_alive_teams(t_lemipc *lemipc)
 	i = 0;
 	player_team = 0;
 	team_count = 0;
-	fill_zero((int*)&teams);
+	fill_zero((int*)&teams, TEAM_SIZE);
 	while (i < PLAYERS_SIZE)
 	{
 		if (lemipc->players[i].alive)

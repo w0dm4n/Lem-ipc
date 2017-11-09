@@ -16,3 +16,12 @@ int				get_random(int max)
 {
 	return (rand() % max);
 }
+
+void			fill_zero(int *array, int len)
+{
+	int		i;
+
+	i = 0;
+	while (i < len)
+		array[i++] = 0;
+}

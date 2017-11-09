@@ -17,7 +17,7 @@ NAMEBASE    =   $(shell basename $(NAME))
 LENGTHNAME	=	`printf "%s" $(NAMEBASE) | wc -c`
 MAX_COLS	=	$$(echo "$$(tput cols)-24-$(LENGTHNAME)"|bc)
 
-CC			=	gcc
+CC			= gcc
 FLAGS		= -Wall -Wextra -w
 FLAGS_O		= -Wall -Wextra -w
 
@@ -27,23 +27,24 @@ OBJDIR_LEM_IPC		=	objs/
 INCDIR				=	includes/
 LIBFT_DIR			=	libft/
 LIBFT_LIB			=	$(LIBFT_DIR)libft.a
-SDL_LIB				=	`sdl-config --cflags --libs`
+SDL_LIB				=	`sdl2-config --cflags --libs`
 
 SRCBASE_LEM_IPC	=	\
-					main.c				\
-					segment.c			\
-					semaphore.c			\
-					lemipc.c			\
-					utils/ipc.c			\
-					utils/number.c		\
-					map.c				\
-					player.c			\
-					team.c				\
-					lists/teams.c		\
-					timeline.c			\
-					lists/maps.c		\
-					signal.c			\
-					graphics/main.c		\
+					main.c					\
+					segment.c				\
+					semaphore.c				\
+					lemipc.c				\
+					utils/ipc.c				\
+					utils/number.c			\
+					map.c					\
+					player.c				\
+					lists/teams.c			\
+					timeline.c				\
+					lists/maps.c			\
+					signal.c				\
+					graphics/main.c			\
+					ia/pathfinding.c		\
+					ia/ia_actions_handler.c	\
 
 SRCS_LEM_IPC			=	$(addprefix $(SRCDIR_LEM_IPC), $(SRCBASE_LEM_IPC))
 OBJS_LEM_IPC			=	$(addprefix $(OBJDIR_LEM_IPC), $(SRCBASE_LEM_IPC:.c=.o))

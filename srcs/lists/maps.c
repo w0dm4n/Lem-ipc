@@ -12,20 +12,11 @@
 
 #include "all.h"
 
-static void		fill_zero_map(int *map_y)
-{
-	int		y;
-
-	y = 0;
-	while (y < MAP_SIZE)
-		map_y[y++] = FREE_CELL;
-}
-
 void			init_map(t_lemipc *lemipc)
 {
 	int		x;
 
 	x = 0;
 	while (x < MAP_SIZE)
-		fill_zero_map((int*)&lemipc->map[x++]);
+		fill_zero((int*)&lemipc->map[x++], MAP_SIZE);
 }

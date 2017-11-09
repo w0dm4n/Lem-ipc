@@ -17,7 +17,7 @@ t_player			*find_player_by_id(int id, t_lemipc *lemipc)
 	int		i;
 
 	i = 0;
-	while (i < lemipc->players_length)
+	while (i < PLAYERS_SIZE)
 	{
 		if (lemipc->players[i].id == id)
 			return (&lemipc->players[i]);
@@ -70,7 +70,10 @@ int					count_alive_players(t_lemipc *lemipc)
 
 void				die(t_player *player, t_lemipc *lemipc)
 {
+	get_next_player_turn(&lemipc->timeline, lemipc);
+	printf("Player dead (%d)\n", player->id);
 	reset_map_pos(lemipc, player);
+	player->id = 0;
 	player->alive = FALSE;
 	player->x_position = 0;
 	player->y_position = 0;
@@ -157,13 +160,13 @@ t_player			*add_new_player(int team_id, t_lemipc *lemipc)
 	sem_t		*sem;
 
 	sem = get_semaphore(SEMAPHORE_NAME);
-	player_id = 0;
+	player_id = lemipc->players_length++ + 1;
 	player = NULL;
 	if (team_id > 0 && (player = get_free_player(lemipc)) != NULL &&
 	lemipc->players_length < (FORNORMMAPSIZE * 2))
 	{
 		lock(sem);
-		player->id = lemipc->players_length++;
+		player->id = player_id;
 		player->team_id = team_id;
 		player->alive = TRUE;
 		if (!set_spawn_position(lemipc, player))

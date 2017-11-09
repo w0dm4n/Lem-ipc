@@ -14,12 +14,28 @@
 #include "lists.h"
 #include "graphics.h"
 
-t_lemipc		*get_lemipc(int seg_id)
+t_lemipc			*get_lemipc(int seg_id)
 {
 	return ((t_lemipc*)get_segment_memory(seg_id));
 }
 
-t_lemipc		*alloc_lemipc(int seg_id, sem_t *sem)
+static void			fill_zero_players(t_lemipc *lemipc)
+{
+	int		i;
+
+	i = 0;
+	while (i < PLAYERS_SIZE)
+	{
+		lemipc->players[i].id = 0;
+		lemipc->players[i].x_position = 0;
+		lemipc->players[i].y_position = 0;
+		lemipc->players[i].alive = 0;
+		lemipc->players[i].team_id = 0;
+		i++;
+	}
+}
+
+t_lemipc			*alloc_lemipc(int seg_id, sem_t *sem)
 {
 	void		*shm;
 	t_lemipc	*lemipc;
@@ -31,12 +47,13 @@ t_lemipc		*alloc_lemipc(int seg_id, sem_t *sem)
 	lemipc->sequence_id = 0;
 	lemipc->players_length = 0;
 	lemipc->game_over = FALSE;
+	fill_zero_players(lemipc);
 	init_map(lemipc);
 	init_timeline(lemipc);
 	return (lemipc);
 }
 
-void			print_result(t_lemipc *lemipc)
+void				print_result(t_lemipc *lemipc)
 {
 	t_player		*winner;
 
@@ -51,7 +68,7 @@ void			print_result(t_lemipc *lemipc)
 	}
 }
 
-void			end_lemipc(t_lemipc *lemipc)
+void				end_lemipc(t_lemipc *lemipc)
 {
 	sem_t		*sem;
 
@@ -65,7 +82,7 @@ void			end_lemipc(t_lemipc *lemipc)
 	delete_segment(lemipc->segment_id);
 }
 
-void			init_lemipc(int team_id)
+void				init_lemipc(int team_id)
 {
 	int				segment;
 	sem_t			*sem;
@@ -79,6 +96,7 @@ void			init_lemipc(int team_id)
 	{
 		if ((lemipc = alloc_lemipc(segment, sem)) != NULL)
 		{
+			g_global.started_the_game = TRUE;
 			pid = fork();
 			if (pid == 0)
 				timeline(add_new_player(team_id, lemipc), lemipc);

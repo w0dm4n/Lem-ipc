@@ -27,6 +27,8 @@ static void				init_utilities()
 	catch_signal();
 	g_global.player = NULL;
 	g_global.lemipc = NULL;
+	g_global.started_the_game = FALSE;
+	g_global.ended_the_game = FALSE;
 }
 
 int						main(int argc, char **argv)
