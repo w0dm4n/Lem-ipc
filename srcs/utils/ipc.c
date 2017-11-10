@@ -12,7 +12,7 @@
 
 #include "all.h"
 
-key_t			get_ipc_key(char *ascii_key)
+key_t			convert_to_key(char *ascii_key)
 {
 	int		i;
 	key_t	key;

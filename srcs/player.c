@@ -19,7 +19,7 @@ t_player			*find_player_by_id(int id, t_lemipc *lemipc)
 	i = 0;
 	while (i < PLAYERS_SIZE)
 	{
-		if (lemipc->players[i].id == id)
+		if (lemipc->players[i].alive && lemipc->players[i].id == id)
 			return (&lemipc->players[i]);
 		i++;
 	}
@@ -70,16 +70,21 @@ int					count_alive_players(t_lemipc *lemipc)
 
 void				die(t_player *player, t_lemipc *lemipc)
 {
-	get_next_player_turn(&lemipc->timeline, lemipc);
-	printf("Player dead (%d)\n", player->id);
-	reset_map_pos(lemipc, player);
-	player->id = 0;
-	player->alive = FALSE;
-	player->x_position = 0;
-	player->y_position = 0;
-	lemipc->players_length -= 1;
-	if (lemipc->players_length < 0)
-		lemipc->players_length = 0;
+	t_msg_buf	msg;
+
+	if (player->alive && player->id != 0)
+	{
+		get_next_player_turn(&lemipc->timeline, lemipc);
+		printf("Player dead (%d)\n", player->id);
+		reset_map_pos(lemipc, player);
+		player->id = 0;
+		player->alive = FALSE;
+		player->x_position = 0;
+		player->y_position = 0;
+		lemipc->players_length -= 1;
+		if (lemipc->players_length < 0)
+			lemipc->players_length = 0;
+	}
 }
 
 t_player			*get_free_player(t_lemipc *lemipc)
@@ -103,7 +108,7 @@ t_player			*get_first_alive_player(t_lemipc *lemipc)
 	i = 0;
 	while (i < PLAYERS_SIZE)
 	{
-		if (lemipc->players[i].alive)
+		if (lemipc->players[i].alive && lemipc->players[i].id > 0)
 			return (&lemipc->players[i]);
 		i++;
 	}

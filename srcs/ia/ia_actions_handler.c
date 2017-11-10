@@ -21,30 +21,6 @@ void		fill_zero_finder(t_player *players, int len)
 		players[i++].id = 0;
 }
 
-static void		find_players_beside(t_player *players_beside, t_player *player, t_lemipc *lemipc)
-{
-	int			count_players_beside;
-
-	fill_zero_finder((t_player*)players_beside, MAX_POSSIBLE_PLAYERS_BESIDE);
-	count_players_beside = 0;
-	if (lemipc->map[player->x_position - 1][player->y_position] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position - 1, player->y_position);
-	if (lemipc->map[player->x_position - 1][player->y_position - 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position - 1, player->y_position - 1);
-	if (lemipc->map[player->x_position - 1][player->y_position + 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position - 1, player->y_position + 1);
-	if (lemipc->map[player->x_position + 1][player->y_position] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position + 1, player->y_position);
-	if (lemipc->map[player->x_position + 1][player->y_position - 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position + 1, player->y_position - 1);
-	if (lemipc->map[player->x_position + 1][player->y_position + 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position + 1, player->y_position + 1);
-	if (lemipc->map[player->x_position][player->y_position + 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position, player->y_position + 1);
-	if (lemipc->map[player->x_position][player->y_position - 1] != FREE_CELL)
-		players_beside[count_players_beside++] = *get_player_on_cell(lemipc, player->x_position, player->y_position - 1);
-}
-
 int		count_enemies_beside(t_player *players_beside, t_player *player)
 {
 	int		i;
@@ -62,48 +38,39 @@ int		count_enemies_beside(t_player *players_beside, t_player *player)
 	return (count_players_beside);
 }
 
-void		chose_action(t_player *player, t_player *players, t_lemipc *lemipc)
+void		define_behavior(t_player *player, t_player *players, t_lemipc *lemipc)
 {
 	t_player	*target;
 	int			enemies_around;
 	int			mates_around;
+	int			all_mates;
 
 	target = NULL;
 	enemies_around = count_ennemies_around(players, player);
 	mates_around = count_mates_around(players, player);
-
-	if (enemies_around >= 1 && mates_around == 0)
+	all_mates = count_mates(player, lemipc);
+	if (enemies_around >= 1 && mates_around == 0 && all_mates > 0)
 	{
-		printf("j'ss tout seul a leeeeeeeeeed\n");
-		// find_nearest_friend
+		if ((target = find_nearest_friend(player, lemipc)) != NULL)
+			move_to_target(player, target, lemipc);
 	}
 	else if ((mates_around + 1) > enemies_around)
 	{
-		printf("Let's kill the mother fuqueur\n");
-		// get the mother fucker
+		if ((target = find_nearest_enemy(player, lemipc)) != NULL)
+			move_to_target(player, target, lemipc);
 	}
-	else if (enemies_around > (mates_around + 1))
-	{
-		printf("Let's run like a pussy !\n");
-		// find_farther_friend
-	}
-	else
-	{
-		printf("I dont know what to do so i will just follow an enemy.\n");
-	}
-	if ((target = find_nearest_enemy(player, lemipc)) != NULL)
-		move_to_enemy(player, target, lemipc);
-	printf("Enemies: %d, mates: %d\n", enemies_around, mates_around);
+	else if ((target = find_nearest_enemy(player, lemipc)) != NULL)
+		move_to_target(player, target, lemipc);
 }
 
 void		ia_actions_handler(t_player *player, t_lemipc *lemipc)
 {
-	t_player	players_beside[MAX_POSSIBLE_PLAYERS_BESIDE];
+	t_player	players_beside[MAX_POSSIBLE_PLAYERS_AROUND];
 	t_player	players_around[MAX_POSSIBLE_PLAYERS_AROUND];
 
-	find_players_beside((t_player*)&players_beside, player, lemipc);
-	find_players_around((t_player*)&players_around, player, lemipc, 10);
-	chose_action(player, (t_player*)&players_around, lemipc);
-	// if (count_enemies_beside((t_player*)&players_beside, player) >= MAX_ENEMY_BEFORE_DEATH)
-	// 	die(player, lemipc);
+	find_players_around((t_player*)&players_beside, player, lemipc, 1);
+	find_players_around((t_player*)&players_around, player, lemipc, 8);
+	define_behavior(player, (t_player*)&players_around, lemipc);
+	if (count_enemies_beside((t_player*)&players_beside, player) >= MAX_ENEMY_BEFORE_DEATH)
+		die(player, lemipc);
 }

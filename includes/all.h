@@ -27,17 +27,19 @@
 
 # include "../libft/includes/libft.h"
 
-# define BOOL								ushort
+# define BOOL								int
 # define TRUE								1
 # define FALSE								0
 # define SEGMENT_ERROR						-1
+# define MSQ_ERROR							-1
 # define IPC_KEY							"l3m1pc"
+# define MSGQ_KEY							"qu3u3_l3m1pc"
 # define SEMAPHORE_NAME						"/l3m1pc"
 # define MAP_SIZE							50
 # define FREE_CELL							0
 # define TEAM_SIZE							1024
 # define PLAYERS_SIZE						10000
-# define ACTIONSLOOPTIME					100
+# define ACTIONSLOOPTIME					1
 # define HISTORY							5096
 # define SPAWN_POS_TIME						100
 # define _NSIG								65
@@ -47,12 +49,20 @@
 # define MAX_POSSIBLE_PLAYERS_BESIDE		8
 # define MAX_ENEMY_BEFORE_DEATH				2
 # define MAX_TURN_TIME						1
+# define MSGSZ								128
+# define MSG_TURN							"CURRENT_PLAYER_TURN\0"
+
+typedef struct		s_msg_buf
+{
+	long    		m_type;
+	char    		m_text[MSGSZ];
+}					t_msg_buf;
 
 typedef struct		s_player
 {
-	ushort			id;
-	ushort			x_position;
-	ushort			y_position;
+	int				id;
+	int				x_position;
+	int				y_position;
 	BOOL			alive;
 	int				team_id;
 }					t_player;
@@ -60,27 +70,27 @@ typedef struct		s_player
 typedef struct		s_timeline
 {
 	int				round;
-	ushort			current_player_id;
-	ushort			history_players[HISTORY];
-	ushort			history_count;
+	int				current_player_id;
+	int				history_players[HISTORY];
+	int				history_count;
 }					t_timeline;
 
 typedef struct		s_lemipc
 {
-	ushort			sequence_id;
+	int				sequence_id;
 	int				segment_id;
-	ushort			map[MAP_SIZE][MAP_SIZE];
+	int				map[MAP_SIZE][MAP_SIZE];
 	t_player		players[PLAYERS_SIZE];
-	ushort			players_length;
+	int				players_length;
 	t_timeline		timeline;
 	BOOL			game_over;
 }					t_lemipc;
 
 typedef struct		s_target
 {
-	ushort			id;
-	ushort			x_position;
-	ushort			y_position;
+	int				id;
+	int				x_position;
+	int				y_position;
 }					t_target;
 
 typedef struct		s_global
@@ -123,14 +133,14 @@ BOOL			unlock(sem_t *sem);
 /*
 **	UTILS
 */
-key_t			get_ipc_key(char *ascii_key);
+key_t			convert_to_key(char *ascii_key);
 int				get_random(int max);
 void			fill_zero(int *array, int len);
 
 /*
 **	MAP
 */
-t_player		*get_player_on_cell(t_lemipc *lemipc, ushort x, ushort y);
+t_player		*get_player_on_cell(t_lemipc *lemipc, int x, int y);
 void			update_map_pos(t_lemipc *lemipc, t_player *player);
 
 /*
@@ -160,8 +170,20 @@ void			catch_signal();
 */
 void			ia_actions_handler(t_player *player, t_lemipc *lemipc);
 t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc);
-void			move_to_enemy(t_player *player, t_player *target, t_lemipc *lemipc);
+void			move_to_target(t_player *player, t_player *target, t_lemipc *lemipc);
 void			fill_zero_finder(t_player *players_beside, int len);
+
+/*
+**	ENEMY
+*/
+int				get_all_possible_enemy(t_player *player, t_target *targets, t_lemipc *lemipc);
+t_player		*find_nearest_enemy(t_player *player, t_lemipc *lemipc);
+
+/*
+**	MATES
+*/
+int				count_mates(t_player *player, t_lemipc *lemipc);
+t_player		*find_nearest_friend(t_player *player, t_lemipc *lemipc);
 
 /*
 **	MAP
@@ -172,10 +194,11 @@ void			reset_map_pos(t_lemipc *lemipc, t_player *player);
 /*
 **	RADIUS
 */
-void		find_players_around(t_player *players, t_player *player, t_lemipc *lemipc, int radius);
-int			count_players_around(t_player *players);
-int			count_ennemies_around(t_player *players, t_player *player);
-int			count_mates_around(t_player *players, t_player *player);
+void			find_players_around(t_player *players, t_player *player, t_lemipc *lemipc, int radius);
+int				count_players_around(t_player *players);
+int				count_ennemies_around(t_player *players, t_player *player);
+int				count_mates_around(t_player *players, t_player *player);
+t_player		*find_player_by_radius(int radius, t_player *player, t_target *targets, int len, t_lemipc *lemipc);
 
 /*
 **	PATHFINDING
@@ -183,4 +206,12 @@ int			count_mates_around(t_player *players, t_player *player);
 void			fill_zero_targets(t_target *targets);
 int				get_all_possible_enemy(t_player *player, t_target *targets, t_lemipc *lemipc);
 int				get_all_possible_players(t_player *player, t_target *targets, t_lemipc *lemipc);
+
+/*
+**	MESSAGE_QUEUE
+*/
+void			delete_all_messages_queues(void);
+int				create_message_queue(void);
+int				get_message_queue(void);
+void			build_message(int type, char *data, t_msg_buf *msg);
 #endif

@@ -80,6 +80,7 @@ void				end_lemipc(t_lemipc *lemipc)
 	unlock(sem);
 	delete_semaphore(SEMAPHORE_NAME);
 	delete_segment(lemipc->segment_id);
+	delete_all_messages_queues();
 }
 
 void				init_lemipc(int team_id)
@@ -88,11 +89,15 @@ void				init_lemipc(int team_id)
 	sem_t			*sem;
 	t_lemipc		*lemipc;
 	pid_t			pid;
+	int				msq_id;
 
 	pid = 0;
+	msq_id = 0;
+	delete_all_messages_queues();
 	delete_semaphore(SEMAPHORE_NAME);
 	if ((segment = create_segment(get_segment_size())) != SEGMENT_ERROR &&
-		(sem = create_semaphore(SEMAPHORE_NAME)) != SEM_FAILED)
+		(sem = create_semaphore(SEMAPHORE_NAME)) != SEM_FAILED &&
+		(msq_id = create_message_queue()) != MSQ_ERROR)
 	{
 		if ((lemipc = alloc_lemipc(segment, sem)) != NULL)
 		{

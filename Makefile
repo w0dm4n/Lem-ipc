@@ -46,6 +46,9 @@ SRCBASE_LEM_IPC	=	\
 					ia/pathfinding.c			\
 					ia/ia_actions_handler.c		\
 					ia/radius.c					\
+					ia/enemy.c					\
+					msg_queue.c					\
+					ia/mates.c					\
 
 SRCS_LEM_IPC			=	$(addprefix $(SRCDIR_LEM_IPC), $(SRCBASE_LEM_IPC))
 OBJS_LEM_IPC			=	$(addprefix $(OBJDIR_LEM_IPC), $(SRCBASE_LEM_IPC:.c=.o))

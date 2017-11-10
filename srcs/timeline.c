@@ -102,9 +102,10 @@ BOOL		get_next_player_turn(t_timeline *timeline, t_lemipc *lemipc)
 	return (reset_history_timeline(timeline, lemipc));
 }
 
-BOOL		end_turn(t_player *player, t_timeline *timeline, t_lemipc *lemipc, sem_t *sem)
+BOOL		end_turn(t_player *player, t_timeline *timeline, t_lemipc *lemipc, sem_t *sem, int msq_id)
 {
 	BOOL		res;
+	t_msg_buf	msg;
 
 	res = FALSE;
 	update_map_pos(lemipc, player);
@@ -135,17 +136,25 @@ void		start_actions_loop(t_player *player, t_lemipc *lemipc)
 {
 	t_timeline	*timeline;
 	sem_t		*sem;
+	int			msq_id;
+	t_msg_buf	msg;
+	int			res_recv;
 
+	ft_memset((void*)&msg.m_text, 0, MSGSZ);
+	msq_id = get_message_queue();
+	res_recv = 0;
 	sem = get_semaphore(SEMAPHORE_NAME);
 	timeline = &lemipc->timeline;
 	while (player->alive && !lemipc->game_over)
 	{
-		default_timeline(timeline, lemipc, sem);
+		if (lemipc->timeline.round == 0)
+			default_timeline(timeline, lemipc, sem);
 		if (my_turn(player, lemipc, timeline, sem))
 		{
-			// printf("Current player id: %d\n", player->id);
-			ia_actions_handler(player, lemipc);
-			if (!end_turn(player, timeline, lemipc, sem))
+			printf("Turn (T %d)(P %d)\n", timeline->round, player->id);
+			if (lemipc->timeline.round > 0)
+				ia_actions_handler(player, lemipc);
+			if (!end_turn(player, timeline, lemipc, sem, msq_id))
 				end_lemipc(lemipc);
 			check_fight_end(lemipc);
 		}

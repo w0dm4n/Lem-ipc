@@ -19,12 +19,12 @@ int				get_segment_size()
 
 int				get_active_segment(int size)
 {
-	return (shmget(get_ipc_key(IPC_KEY), size, 0666));
+	return (shmget(convert_to_key(IPC_KEY), size, 0666));
 }
 
 int				create_segment(int size)
 {
-	return (shmget(get_ipc_key(IPC_KEY), size, IPC_CREAT | 0666));
+	return (shmget(convert_to_key(IPC_KEY), size, IPC_CREAT | 0666));
 }
 
 int				delete_segment(int segment_id)

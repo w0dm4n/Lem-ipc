@@ -12,7 +12,29 @@
 
 #include "all.h"
 
-static int	find_by_radius(int radius, t_player *player, t_target *possible_targets, \
+t_player		*find_player_by_radius(int radius, t_player *player, t_target *targets, int len, t_lemipc *lemipc)
+{
+	int	x;
+	int y;
+	int i;
+
+	i = 0;
+	while (i < len)
+	{
+		x = player->x_position - targets[i].x_position;
+		y = player->y_position - targets[i].y_position;
+		if (x < 0)
+			x = -x;
+		if (y < 0)
+			y = -y;
+		if (x <= radius && y <= radius)
+			return (find_player_by_id(targets[i].id, lemipc));
+		i++;
+	}
+	return (NULL);
+}
+
+int	find_players_by_radius(int radius, t_player *player, t_target *possible_targets, \
 	t_player *players, int len, t_lemipc *lemipc)
 {
 	int	x;
@@ -30,7 +52,7 @@ static int	find_by_radius(int radius, t_player *player, t_target *possible_targe
 			x = -x;
 		if (y < 0)
 			y = -y;
-		if (x < radius && y < radius)
+		if (x <= radius && y <= radius)
 			players[players_count++] = *find_player_by_id(possible_targets[i].id, lemipc);
 		i++;
 	}
@@ -92,5 +114,5 @@ void		find_players_around(t_player *players, t_player *player, t_lemipc *lemipc,
 
 	fill_zero_finder((t_player*)players, MAX_POSSIBLE_PLAYERS_AROUND);
 	if ((possible_target = get_all_possible_players(player, (t_target*)&targets, lemipc)) > 0)
-		find_by_radius(radius, player, (t_target*)&targets, players, possible_target, lemipc);
+		find_players_by_radius(radius, player, (t_target*)&targets, players, possible_target, lemipc);
 }
